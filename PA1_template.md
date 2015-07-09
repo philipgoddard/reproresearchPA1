@@ -57,7 +57,8 @@ total_steps <- dataset %>%
   summarise(total = sum(steps, na.rm = T))
 
 plot1 <- ggplot(total_steps, aes(total, na.rm = T)) +
-  geom_histogram(color = 'blue', fill = 'blue', alpha = 0.5) +
+  geom_histogram(color = 'blue', fill = 'blue', alpha = 0.5, binwidth = 1000) +
+  xlim(c(0,25000)) +
   xlab('total daily steps') +
   ylab('frequency') +
   ggtitle('daily totals histogram') +
@@ -180,9 +181,8 @@ naIndex <- which(is.na(intervalMeanSd$steps))
 
 # set seed for reproduceability, and impute
 set.seed(100)
-intervalMeanSd$steps[naIndex] <- abs(rnorm(1,
-                                        mean = intervalMeanSd$intMean[naIndex],
-                                        sd = intervalMeanSd$intSd[naIndex]))
+intervalMeanSd[naIndex, ] <- intervalMeanSd[naIndex, ] %>%
+  mutate(steps = abs(rnorm(n(), mean = intMean, sd = intSd )))
 
 # finally, select only columns of interest, and
 # confirm no missing values
@@ -203,7 +203,8 @@ total_steps2 <- imputeData %>%
   summarise(total = sum(steps))
 
 plot2 <- ggplot(total_steps2, aes(total, na.rm = T)) +
-  geom_histogram(color = 'red', fill = 'red', alpha = 0.5) +
+  geom_histogram(color = 'red', fill = 'red', alpha = 0.5, binwidth = 1000) +
+  xlim(c(0,25000)) +
   xlab('total daily steps') +
   ylab('frequency') +
   ggtitle('daily totals histogram, NAs imputed') +
@@ -223,11 +224,11 @@ rbind(MeanMedian(total_steps2$total), MeanMedian(total_steps$total))
 
 ```
 ##          [,1]  [,2]
-## [1,] 9440.683 10395
-## [2,] 9354.230 10395
+## [1,] 12232.28 11458
+## [2,]  9354.23 10395
 ```
 
-Its hard to see any difference in the histograms due to the bin widths, but we see that the mean is now slightly shifted. The imputation strategy has not effected the median.
+We see there are far less days with 0-1000 steps, and that the mean and median have both increased.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -242,7 +243,7 @@ dayData <- imputeData %>%
   group_by(isWeekend, interval) %>%
   summarise(mean = mean(steps))
 
-xyplot( mean ~ interval | as.factor(isWeekend),
+xyplot( mean ~ interval | isWeekend,
        data = dayData,
        type = c("l"),
        layout = c(1, 2),
@@ -250,3 +251,5 @@ xyplot( mean ~ interval | as.factor(isWeekend),
 ```
 
 ![](PA1_template_files/figure-html/weekends-1.png) 
+
+We can see there is indeed a difference in activity between weekends and weekedays. Both peak around interval 800, however the level of activity is in general higher on weekends.
