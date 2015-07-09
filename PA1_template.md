@@ -147,7 +147,7 @@ daily_activity[daily_activity$average == max(daily_activity$average), ]
 
 ## Imputing missing values
 
-Time for a bit of fun...
+Time to make up an (arbitrary) strategy, which is described below. 
 
 
 ```r
@@ -162,30 +162,31 @@ sum(is.na(dataset))
 ```
 
 ```r
-# to impute, find mean and sd for each interval
+# to impute, find mean for each interval
 # then draw from a (absolute, as negative steps doesnt make sense)
-# random normal distribution for missing samples
+# random normal distribution for missing samples, fixing sd = 30
+# as it was found that sd for some intervals was very large (30 was chosen
+# arbitrarily, corresponds to a variance of approx 1000 steps)
 
 # first group by interval, and determine the mean and sd for each interval
-intervalMeanSd <- dataset %>%
+intervalMean <- dataset %>%
   group_by(interval) %>%
-  summarise(intMean = mean(steps, na.rm = T),
-            intSd = sd(steps, na.rm = T))
+  summarise(intMean = mean(steps, na.rm = T))
 
 # merge with the origional dataset so have the mean and sd columns
-intervalMeanSd <- merge(dataset, intervalMeanSd, by = 'interval', all = F)
+intervalMean <- merge(dataset, intervalMean, by = 'interval', all = F)
 
 # determine the row numbers of missing values
-naIndex <- which(is.na(intervalMeanSd$steps))
+naIndex <- which(is.na(intervalMean$steps))
 
 # set seed for reproduceability, and impute
 set.seed(100)
-intervalMeanSd[naIndex, ] <- intervalMeanSd[naIndex, ] %>%
-  mutate(steps = abs(rnorm(n(), mean = intMean, sd = intSd )))
+intervalMean[naIndex, ] <- intervalMean[naIndex, ] %>%
+  mutate(steps = abs(round(rnorm(n(), mean = intMean, sd = 30 ))))
 
 # finally, select only columns of interest, and
 # confirm no missing values
-imputeData <- select(intervalMeanSd, steps, date, interval)
+imputeData <- select(intervalMean, steps, date, interval)
 sum(is.na(imputeData))
 ```
 
@@ -223,7 +224,7 @@ rbind(MeanMedian(total_steps2$total), MeanMedian(total_steps$total))
 
 ```
 ##          [,1]  [,2]
-## [1,] 12232.28 11458
+## [1,] 11128.95 11458
 ## [2,]  9354.23 10395
 ```
 
