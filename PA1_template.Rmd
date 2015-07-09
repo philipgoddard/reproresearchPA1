@@ -10,8 +10,7 @@ output:
 First lets load up my favorite libraries for this job, and read the data. Im going to convert the date immediately from a character string to date. Its good practice to do investigate some summaries of the data to avoid suprises, so lets do that too.
 
 ```{r loadup, message = FALSE, warning = FALSE}
-library("dplyr"); library("ggplot2"); library("lattice"); library(gridExtra)
-library(xtable)
+library("dplyr"); library("ggplot2"); library("lattice"); library("gridExtra")
 
 dataset <- read.csv(file = 'activity.csv',
                  header = TRUE,

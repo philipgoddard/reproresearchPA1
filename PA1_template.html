@@ -67,8 +67,7 @@ img {
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <p>First lets load up my favorite libraries for this job, and read the data. Im going to convert the date immediately from a character string to date. Its good practice to do investigate some summaries of the data to avoid suprises, so lets do that too.</p>
-<pre class="r"><code>library(&quot;dplyr&quot;); library(&quot;ggplot2&quot;); library(&quot;lattice&quot;); library(gridExtra)
-library(xtable)
+<pre class="r"><code>library(&quot;dplyr&quot;); library(&quot;ggplot2&quot;); library(&quot;lattice&quot;); library(&quot;gridExtra&quot;)
 
 dataset &lt;- read.csv(file = 'activity.csv',
                  header = TRUE,

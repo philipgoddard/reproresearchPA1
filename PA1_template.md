@@ -6,8 +6,7 @@ First lets load up my favorite libraries for this job, and read the data. Im goi
 
 
 ```r
-library("dplyr"); library("ggplot2"); library("lattice"); library(gridExtra)
-library(xtable)
+library("dplyr"); library("ggplot2"); library("lattice"); library("gridExtra")
 
 dataset <- read.csv(file = 'activity.csv',
                  header = TRUE,
